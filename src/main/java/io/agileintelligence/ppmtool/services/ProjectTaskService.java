@@ -1,7 +1,5 @@
 package io.agileintelligence.ppmtool.services;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +23,14 @@ public class ProjectTaskService {
 	@Autowired
 	private ProjectRepository projectRepository;
 	
-	public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask) {
+	@Autowired
+	private ProjectService projectService;
+	
+	public ProjectTask addProjectTask(String projectIdentifier, ProjectTask projectTask, String username) {
 		
-		try {
+
 			//PTs to be added to a specific project, != null project, => BL exists
-			Backlog backlog = backlogRepository.findByProjectIdentifier(projectIdentifier);
+			Backlog backlog = projectService.findProjectByIdentifier(projectIdentifier, username).getBacklog();//backlogRepository.findByProjectIdentifier(projectIdentifier);
 			
 			//set backlog to the PT
 			projectTask.setBacklog(backlog);
@@ -56,32 +57,22 @@ public class ProjectTaskService {
 			}
 			
 			return projectTaskRepository.save(projectTask);
-		} catch (Exception e) {
-			throw new ProjectNotFoundException("Project Not Found");
-		}
 	
 		
 		
 	}
 
-	public Iterable<ProjectTask> findBacklogById(String id){
+	public Iterable<ProjectTask> findBacklogById(String id, String username){
 		
-		Project project = projectRepository.findByProjectIdentifier(id);
-		
-		if(project == null) {
-			throw new ProjectNotFoundException("Project with ID: '" + id + "' does not exist");
-		}
+		projectService.findProjectByIdentifier(id, username);
 		
 		return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
 	}
 
-	public ProjectTask findPTByProjectSequence(String backlog_id, String pt_id) {
+	public ProjectTask findPTByProjectSequence(String backlog_id, String pt_id, String username) {
 		
 		//make sure we are searching on an existing backlog
-		Backlog backlog = backlogRepository.findByProjectIdentifier(backlog_id);
-		if(backlog == null) {
-			throw new ProjectNotFoundException("Project with ID '" + backlog_id + "' does not exist");
-		}
+		projectService.findProjectByIdentifier(backlog_id, username);
 		
 		//make sure that out task exists
 		ProjectTask projectTask = projectTaskRepository.findByProjectSequence(pt_id);
@@ -97,16 +88,16 @@ public class ProjectTaskService {
 		return projectTask;
 	}
 	
-	public ProjectTask updateByProjectSequence(ProjectTask updatedTask, String backlog_id, String pt_id) {
-		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id);
+	public ProjectTask updateByProjectSequence(ProjectTask updatedTask, String backlog_id, String pt_id, String username) {
+		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id, username);
 		
 		projectTask = updatedTask;
 		
 		return projectTaskRepository.save(projectTask);
 	}
 	
-	public void deletePTByProjectSequence(String backlog_id, String pt_id) {
-		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id);
+	public void deletePTByProjectSequence(String backlog_id, String pt_id, String username) {
+		ProjectTask projectTask = findPTByProjectSequence(backlog_id, pt_id, username);
 		
 		projectTaskRepository.delete(projectTask);
 	}
