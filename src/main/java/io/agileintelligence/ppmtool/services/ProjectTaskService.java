@@ -62,11 +62,16 @@ public class ProjectTaskService {
 		
 	}
 
-	public Iterable<ProjectTask> findBacklogById(String id, String username){
+	public Iterable<ProjectTask> findBacklogById(String id, String sort, String username){
 		
 		projectService.findProjectByIdentifier(id, username);
 		
-		return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
+		if(sort.equals("1"))
+			return projectTaskRepository.findByProjectIdentifierOrderByDueDate(id);
+		else if(sort.equals("2"))
+			return projectTaskRepository.findByProjectIdentifierOrderByPriority(id);
+		else
+			return projectTaskRepository.findByProjectIdentifierOrderByProjectSequence(id);
 	}
 
 	public ProjectTask findPTByProjectSequence(String backlog_id, String pt_id, String username) {

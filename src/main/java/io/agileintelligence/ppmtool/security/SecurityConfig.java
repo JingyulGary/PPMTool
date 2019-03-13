@@ -45,14 +45,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(customUserDetailService).passwordEncoder(bCryptPasswordEncoder);
 	}
 
-
 	@Override
 	@Bean(BeanIds.AUTHENTICATION_MANAGER)
 	protected AuthenticationManager authenticationManager() throws Exception {
 		return super.authenticationManager();
 	}
-
-
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {

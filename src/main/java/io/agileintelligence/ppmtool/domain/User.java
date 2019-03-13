@@ -24,29 +24,38 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Entity
 public class User implements UserDetails{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Getter @Setter
 	private Long id;
 	
 	@Email(message = "Username needs to be an email")
 	@NotBlank(message = "Username is required")
 	@Column(unique = true)
+	@Getter @Setter
 	private String username;
 	@NotBlank(message = "Please enter your full name")
+	@Getter @Setter
 	private String fullName;
 	@NotBlank(message = "Password field is required")
+	@Getter @Setter
 	private String password;
 	@Transient
+	@Getter @Setter
 	private String confirmPassword;
+	@Getter @Setter
 	private Date create_At;
+	@Getter @Setter
 	private Date update_At;
 	
 	//OneToMany with Project
 	@OneToMany(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
-	private List<Project> projects =new ArrayList<>();
-	
+	private List<Project> projects =new ArrayList<>();	
 	
 	public User() {
 		
@@ -63,71 +72,6 @@ public class User implements UserDetails{
 		this.update_At = new Date();
 	}
 
-	public List<Project> getProjects() {
-		return projects;
-	}
-
-
-	public void setProjects(List<Project> projects) {
-		this.projects = projects;
-	}
-
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getFullName() {
-		return fullName;
-	}
-
-	public void setFullName(String fullName) {
-		this.fullName = fullName;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getConfirmPassword() {
-		return confirmPassword;
-	}
-
-	public void setConfirmPassword(String confirmPassword) {
-		this.confirmPassword = confirmPassword;
-	}
-
-	public Date getCreate_At() {
-		return create_At;
-	}
-
-	public void setCreate_At(Date create_At) {
-		this.create_At = create_At;
-	}
-
-	public Date getUpdate_At() {
-		return update_At;
-	}
-
-	public void setUpdate_At(Date update_At) {
-		this.update_At = update_At;
-	}
 
 	/*
 	 UserDetails interface methods
